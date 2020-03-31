@@ -27,17 +27,14 @@ class Indexes {
 	 * Index into the word collection array.
 	 */
 	int wordIndex;
-	
 	/**
 	 * Start index of substring in word.
 	 */
 	short startIndex;
-	
 	/**
 	 * End index of substring in word.
 	 */
 	short endIndex;
-	
 	/**
 	 * Initializes this instance with all indexes.
 	 * 

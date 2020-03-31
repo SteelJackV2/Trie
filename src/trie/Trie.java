@@ -22,11 +22,41 @@ public class Trie {
 	 * @return Root of trie with all words inserted from the input array
 	 */
 	public static TrieNode buildTrie(String[] allWords) {
-		/** COMPLETE THIS METHOD **/
-		
-		// FOLLOWING LINE IS A PLACEHOLDER TO ENSURE COMPILATION
-		// MODIFY IT AS NEEDED FOR YOUR IMPLEMENTATION
-		return null;
+		TrieNode trieNode = new TrieNode(null,null, null);
+		TrieNode currentStage = trieNode.firstChild;
+
+		for (int x = 0; x<allWords.length; x++){
+			int endIndex = allWords[x].length() - 1;
+			if(currentStage == null) {
+				currentStage = new TrieNode(new Indexes(0, (short) 0, (short) endIndex), null, null);
+			}else{
+				String c = allWords[x];
+				while (currentStage != null){
+					if (currentStage.firstChild == null) {			//Leaf
+						String comparator = allWords[currentStage.substr.wordIndex];
+
+						if ( getAmtShared( c, prefix ) > 0 ) {		//If there's any shared chars in the leaf
+							//Leaf turns into a tree, and put the word under the new tree.
+							TrieNode insert = new TrieNode(null, null, null);
+							currentStage.firstChild = insert;					//Point currentStage to the new word.
+							System.out.println();
+							currentStage.substr.endIndex = (short)(getAmtShared( c, prefix ) - 1);
+							insert.substr = new Indexes( currentStage.substr.wordIndex , (short) currentStage.substr.startIndex , (short) (allWords[currentStage.substr.wordIndex].length() - 1) );
+							insert.sibling = new TrieNode( null , null , null);
+							insert.sibling.substr = new Indexes( allWords.length - 1 , (short)currentStage.substr.startIndex , (short) allWords[allWords.length - 1].length() );
+							return;
+						}
+
+					}
+				}
+			}
+		}
+
+		return trieNode;
+	}
+
+	private int sameLetters( String word, String word2){
+
 	}
 	
 	/**
@@ -85,12 +115,12 @@ public class Trie {
 			System.out.println(root.substr);
 		}
 		
-		for (TrieNode ptr=root.firstChild; ptr != null; ptr=ptr.sibling) {
+		for (TrieNode currentStage=root.firstChild; currentStage != null; currentStage=currentStage.sibling) {
 			for (int i=0; i < indent-1; i++) {
 				System.out.print("    ");
 			}
 			System.out.println("     |");
-			print(ptr, indent+1, words);
+			print(currentStage, indent+1, words);
 		}
 	}
  }

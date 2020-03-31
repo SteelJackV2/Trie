@@ -11,8 +11,8 @@ public class TrieApp {
 	
 	public static void main(String[] args) 
 	throws IOException {
-		System.out.print("Enter words file name => ");
-		String wordsFile = stdin.nextLine();
+		System.out.println("Enter words file name => ");
+		String wordsFile = "words3.txt";
 		Scanner sc = new Scanner(new File(wordsFile));
 		// words appear one per line in input file
 		// first line has number of words
