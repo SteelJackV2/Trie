@@ -75,13 +75,16 @@ public class Trie {
 	private static String getVal(TrieNode node, String[] words){
 		Indexes indexes = node.substr;
 		String r = words[indexes.wordIndex];
-		return r.substring(indexes.startIndex, indexes.endIndex+1);
+		return r.substring(0, indexes.endIndex+1);
 	}
 
 
 	private static boolean includes(String tree, String word){
 		char[] first = tree.toCharArray();
 		char[] second = word.toCharArray();
+		if(word.length() < tree.length()){
+			return false;
+		}
 		for(int x = 0; x<first.length; x++){
 			if(first[x] != second[x]){
 				return false;
@@ -127,10 +130,46 @@ public class Trie {
 	 *         If there is no word in the tree that has this prefix, null is returned.
 	 */
 	public static ArrayList<TrieNode> completionList(TrieNode root,String[] allWords,String prefix) {
-
-		return null;
+		ArrayList<TrieNode> results= new ArrayList<>();
+		TrieNode mainPointer = root.firstChild;
+		boolean end = false;
+		while(mainPointer != null && !end){
+			String current = getVal(mainPointer, allWords);
+			if(includes(prefix,current)){
+				results.addAll(getWords(mainPointer));
+				mainPointer = mainPointer.sibling;
+			}else if(includes(current, prefix)){
+				mainPointer = mainPointer.firstChild;
+			}else {
+				mainPointer = mainPointer.sibling;
+			}
+		}
+		if (results.size() == 0){
+			return null;
+		}
+		return results;
 	}
-	
+
+	private static ArrayList<TrieNode> getWords(TrieNode root){
+		ArrayList<TrieNode> results= new ArrayList<TrieNode>();
+		if(root.firstChild == null){
+			results.add(root);
+			return results;
+		}else {
+			TrieNode mainPointer = root.firstChild;
+			while (mainPointer != null) {
+				if (mainPointer.firstChild == null) {
+					results.add(mainPointer);
+					mainPointer = mainPointer.sibling;
+				} else {
+					results.addAll(getWords(mainPointer));
+					mainPointer = mainPointer.sibling;
+				}
+			}
+		}
+		return results;
+	}
+
 	public static void print(TrieNode root, String[] allWords) {
 		System.out.println("\nTRIE\n");
 		print(root, 1, allWords);
