@@ -132,8 +132,7 @@ public class Trie {
 	public static ArrayList<TrieNode> completionList(TrieNode root,String[] allWords,String prefix) {
 		ArrayList<TrieNode> results= new ArrayList<>();
 		TrieNode mainPointer = root.firstChild;
-		boolean end = false;
-		while(mainPointer != null && !end){
+		while(mainPointer != null){
 			String current = getVal(mainPointer, allWords);
 			if(includes(prefix,current)){
 				results.addAll(getWords(mainPointer));
@@ -151,7 +150,7 @@ public class Trie {
 	}
 
 	private static ArrayList<TrieNode> getWords(TrieNode root){
-		ArrayList<TrieNode> results= new ArrayList<TrieNode>();
+		ArrayList<TrieNode> results= new ArrayList<>();
 		if(root.firstChild == null){
 			results.add(root);
 			return results;
@@ -160,11 +159,10 @@ public class Trie {
 			while (mainPointer != null) {
 				if (mainPointer.firstChild == null) {
 					results.add(mainPointer);
-					mainPointer = mainPointer.sibling;
 				} else {
 					results.addAll(getWords(mainPointer));
-					mainPointer = mainPointer.sibling;
 				}
+				mainPointer = mainPointer.sibling;
 			}
 		}
 		return results;
