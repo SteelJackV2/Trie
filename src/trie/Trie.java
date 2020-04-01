@@ -23,40 +23,89 @@ public class Trie {
 	 */
 	public static TrieNode buildTrie(String[] allWords) {
 		TrieNode trieNode = new TrieNode(null,null, null);
-		TrieNode currentStage = trieNode.firstChild;
+		trieNode.firstChild = new TrieNode(new Indexes(0, (short) 0, (short) (allWords[0].length() - 1)), null, null);
+		TrieNode currentStage;
 
-		for (int x = 0; x<allWords.length; x++){
+		for (int x = 1; x<allWords.length; x++){
 			int endIndex = allWords[x].length() - 1;
-			if(currentStage == null) {
-				currentStage = new TrieNode(new Indexes(0, (short) 0, (short) endIndex), null, null);
-			}else{
-				String c = allWords[x];
-				while (currentStage != null){
-					if (currentStage.firstChild == null) {			//Leaf
-						String comparator = allWords[currentStage.substr.wordIndex];
-
-						if ( getAmtShared( c, prefix ) > 0 ) {		//If there's any shared chars in the leaf
-							//Leaf turns into a tree, and put the word under the new tree.
-							TrieNode insert = new TrieNode(null, null, null);
-							currentStage.firstChild = insert;					//Point currentStage to the new word.
-							System.out.println();
-							currentStage.substr.endIndex = (short)(getAmtShared( c, prefix ) - 1);
-							insert.substr = new Indexes( currentStage.substr.wordIndex , (short) currentStage.substr.startIndex , (short) (allWords[currentStage.substr.wordIndex].length() - 1) );
-							insert.sibling = new TrieNode( null , null , null);
-							insert.sibling.substr = new Indexes( allWords.length - 1 , (short)currentStage.substr.startIndex , (short) allWords[allWords.length - 1].length() );
-							return;
-						}
-
+			int previousLevel = 0;
+			String c = allWords[x];
+			currentStage = trieNode.firstChild;
+			boolean end = false;
+			while (currentStage != null && !end){
+				if (currentStage.firstChild == null) { // It is a Leaf
+					String comparator = allWords[currentStage.substr.wordIndex];
+					int same = sameLetters(c, comparator);
+					if(same>previousLevel){ // if there are same letters then make a tree
+						currentStage.substr = new Indexes(currentStage.substr.wordIndex, currentStage.substr.startIndex, (short)(same-1));
+						TrieNode child = new TrieNode(new Indexes( x , (short)same, (short)(c.length() -1) ), null , null);
+						currentStage.firstChild = new TrieNode(new Indexes(currentStage.substr.wordIndex, (short)same, (short)(comparator.length()-1) ), null ,child);
+						end = true;
+					}else if (currentStage.sibling == null){ //or else add a sibling to the end;
+						currentStage.sibling = new TrieNode(new Indexes(x, currentStage.substr.startIndex, (short)endIndex), null, null);
+						end = true;
+					}else{ // check the next sibling
+						currentStage = currentStage.sibling;
+					}
+				}else{    // if it is a child
+					String substring = allWords[currentStage.substr.wordIndex].substring(currentStage.substr.startIndex,currentStage.substr.endIndex+1);
+					int same = sameLetters(c, substring);
+					if(includes(substring,c)){ //if the word should be included inside the child
+						currentStage = currentStage.firstChild;
+						previousLevel = sameLetters(c, substring);
+					}else if(same>0 && same>previousLevel && !includes(substring,c)){ //if the word doesn't fit inside a child and has to become a sibling leaf with a child
+							TrieNode child = new TrieNode(new Indexes(x, (short)same, (short)(c.length() - 1)), null, null);
+							currentStage.firstChild = new TrieNode(currentStage.substr, currentStage.firstChild, currentStage.sibling);
+							currentStage.substr = new Indexes(currentStage.substr.wordIndex, currentStage.substr.startIndex, (short)(same - 1));
+							currentStage.firstChild.substr.startIndex = (short)(currentStage.substr.endIndex+1);
+							currentStage.firstChild.sibling = child;
+							end = true;
+					}else if (currentStage.sibling == null){ //or else add a sibling to the end
+						currentStage.sibling = new TrieNode(new Indexes(x, currentStage.substr.startIndex, (short)endIndex), null, null);
+						end = true;
+					}else{ // check the next sibling
+						currentStage = currentStage.sibling;
 					}
 				}
 			}
-		}
+ 		}
 
 		return trieNode;
 	}
+	private static String getVal(TrieNode node, String[] words){
+		Indexes indexes = node.substr;
+		String r = words[indexes.wordIndex];
+		return r.substring(indexes.startIndex, indexes.endIndex+1);
+	}
 
-	private int sameLetters( String word, String word2){
 
+	private static boolean includes(String tree, String word){
+		char[] first = tree.toCharArray();
+		char[] second = word.toCharArray();
+		for(int x = 0; x<first.length; x++){
+			if(first[x] != second[x]){
+				return false;
+			}
+		}
+		return true;
+	}
+	private static int sameLetters(String word, String word2){
+		int sameLetters = 0;
+		char[] first = word.toCharArray();
+		char[] second = word2.toCharArray();
+		int length = second.length;
+		if(first.length< second.length) {
+			length = first.length;
+		}
+		boolean done = false;
+		while (!done && sameLetters<length){
+			if(first[sameLetters] == second[sameLetters]){
+				sameLetters++;
+			}else{
+				done = true;
+			}
+		}
+		return sameLetters;
 	}
 	
 	/**
@@ -77,12 +126,8 @@ public class Trie {
 	 * 			order of leaf nodes does not matter.
 	 *         If there is no word in the tree that has this prefix, null is returned.
 	 */
-	public static ArrayList<TrieNode> completionList(TrieNode root,
-										String[] allWords, String prefix) {
-		/** COMPLETE THIS METHOD **/
-		
-		// FOLLOWING LINE IS A PLACEHOLDER TO ENSURE COMPILATION
-		// MODIFY IT AS NEEDED FOR YOUR IMPLEMENTATION
+	public static ArrayList<TrieNode> completionList(TrieNode root,String[] allWords,String prefix) {
+
 		return null;
 	}
 	
