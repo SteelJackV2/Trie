@@ -12,7 +12,7 @@ public class TrieApp {
 	public static void main(String[] args) 
 	throws IOException {
 		System.out.println("Enter words file name => ");
-		String wordsFile = "words4.txt";
+		String wordsFile = "Test Cases/test8";
 		Scanner sc = new Scanner(new File(wordsFile));
 		// words appear one per line in input file
 		// first line has number of words
@@ -36,6 +36,7 @@ public class TrieApp {
 		String prefix = stdin.nextLine().trim().toLowerCase();
 		while (!"quit".equals(prefix)) {
 			ArrayList<TrieNode> matches = Trie.completionList(root, allWords, prefix);
+			System.out.println(matches);
 			printMatches(matches, allWords);
 			System.out.print("\ncompletion list for: ");
 			prefix = stdin.nextLine().trim().toLowerCase();
